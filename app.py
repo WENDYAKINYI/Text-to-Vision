@@ -61,6 +61,7 @@ def get_gpt4_vision_caption(base64_image):
         return None
 
 
+
 # --- UI Layout ---
 st.title("Vision to Text: Baseline 🆚 OpenAI")
 st.caption("Compare: Baseline CNN-RNN model | GPT-3.5 Enhanced | GPT-4 Vision")
