@@ -35,9 +35,9 @@ def encode_image_to_base64(image):
     return base64.b64encode(buffered.getvalue()).decode('utf-8')
 
 def get_gpt4_vision_caption(base64_image):
-    """Get standalone caption from GPT-4 Vision"""
     try:
-        response = openai.ChatCompletion.create(
+        client = openai.OpenAI(api_key=st.secrets["openai_key"])
+        response = client.chat.completions.create(
             model="gpt-4-vision-preview",
             messages=[
                 {
@@ -46,7 +46,9 @@ def get_gpt4_vision_caption(base64_image):
                         {"type": "text", "text": "Describe this image accurately and concisely."},
                         {
                             "type": "image_url",
-                            "image_url": f"data:image/jpeg;base64,{base64_image}"
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            }
                         }
                     ]
                 }
@@ -57,6 +59,7 @@ def get_gpt4_vision_caption(base64_image):
     except Exception as e:
         st.error(f"GPT-4 Vision Error: {str(e)}")
         return None
+
 
 # --- UI Layout ---
 st.title("Vision to Text: Baseline 🆚 OpenAI")
