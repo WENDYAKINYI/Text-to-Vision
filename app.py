@@ -84,6 +84,11 @@ with st.sidebar:
     )
 
 # Image Upload or Example
+example_images = {
+    "Beach": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600",
+    "Dog": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600",
+    "Food": "https://images.unsplash.com/photo-1565958011703-72f8583c2708?w=600"
+}
 # Main Content
 st.subheader("Upload an image or provide a URL")
 
@@ -104,18 +109,6 @@ elif url_input:
 else:
     selected = st.selectbox("Or try an example:", list(example_images.keys()))
     image = load_image(example_images[selected])
-
-example_images = {
-    "Beach": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600",
-    "Dog": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600",
-    "Food": "https://images.unsplash.com/photo-1565958011703-72f8583c2708?w=600"
-}
-
-if not uploaded_file:
-    selected = st.selectbox("Or try an example:", list(example_images.keys()))
-    image = load_image(example_images[selected])
-else:
-    image = load_image(uploaded_file)
 
 baseline_result = None
 if image:
