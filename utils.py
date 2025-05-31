@@ -148,7 +148,7 @@ def load_image(image_source):
         print(f"Image load failed: {str(e)}")
         return None
 
-def preprocess_image(image, device='cpu'):
+def preprocess_image(image, device=device):
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
