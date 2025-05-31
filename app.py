@@ -6,7 +6,6 @@ import openai
 import requests
 from io import BytesIO
 import base64
-import numpy as np
 from utils import (
     load_baseline_model,
     generate_baseline_caption,
@@ -21,23 +20,19 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # --- Model Loading ---
 @st.cache_resource
-@st.cache_resource
 def get_models():
     with st.spinner("🔄 Loading models... hang tight!"):
         return load_baseline_model()
-
 
 encoder, decoder, vocab = get_models()
 
 # --- Helper Functions ---
 def encode_image_to_base64(image):
-    """Convert PIL image to base64 for OpenAI API"""
     buffered = BytesIO()
     image.save(buffered, format="JPEG")
     return base64.b64encode(buffered.getvalue()).decode('utf-8')
 
 def get_gpt4_vision_caption(base64_image):
-    """Get standalone caption from GPT-4 Vision"""
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4-vision-preview",
@@ -62,9 +57,8 @@ def get_gpt4_vision_caption(base64_image):
 
 # --- UI Layout ---
 st.title("Vision to Text: Baseline 🆚 OpenAI")
-st.caption("Compare:Baseline CNN-RNN model | GPT-3.5 Enhanced | GPT-4 Vision")
+st.caption("Compare: Baseline CNN-RNN model | GPT-3.5 Enhanced | GPT-4 Vision")
 
-# Sidebar
 with st.sidebar:
     st.header("Settings")
     openai_enabled = st.toggle("Enable OpenAI", True)
@@ -81,7 +75,6 @@ with st.sidebar:
         f"Vocab Size: {len(vocab['word2idx']) if vocab else 0}"
     )
 
-# Main Content
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
 example_images = {
     "Beach": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600",
@@ -89,7 +82,6 @@ example_images = {
     "Food": "https://images.unsplash.com/photo-1565958011703-72f8583c2708?w=600"
 }
 
-# Process image
 if not uploaded_file:
     selected = st.selectbox("Or try an example:", list(example_images.keys()))
     image = load_image(example_images[selected])
@@ -103,26 +95,27 @@ if image:
 
     col1, col2, col3 = st.columns(3)
 
-    # 1. Baseline Model
     with col1:
         st.subheader("🧠 Baseline CNN+RNN Model")
         with st.spinner("Generating baseline CNN-RNN caption..."):
-            baseline_result = generate_baseline_caption(
-                image_tensor=image_tensor,
-                encoder=encoder,
-                decoder=decoder,
-                vocab=vocab,
-                beam_size=3
-            )
-            st.success(baseline_result["caption"])
-            st.caption(f"Confidence: {baseline_result['confidence']:.0%}")
+            try:
+                baseline_result = generate_baseline_caption(
+                    image_tensor=image_tensor,
+                    encoder=encoder,
+                    decoder=decoder,
+                    vocab=vocab,
+                    beam_size=3
+                )
+                st.success(baseline_result["caption"])
+                st.caption(f"Confidence: {baseline_result['confidence']:.0%}")
+            except Exception as e:
+                st.error(f"Baseline model failed: {str(e)}")
 
         st.write("Rate this caption:")
         if st.button("👍", key="like_baseline"):
             st.toast("Thanks for your feedback!")
         st.button("👎", key="dislike_baseline")
 
-    # 2. GPT-3.5 Enhanced Baseline Model
     with col2:
         st.subheader("🔍 GPT-3.5 Enhanced")
         if openai_enabled and 'openai_key' in st.secrets:
@@ -140,7 +133,6 @@ if image:
             st.toast("Thanks for your feedback!")
         st.button("👎", key="dislike_openai_enhancement")
 
-    # 3. GPT-4 Vision (Standalone)
     with col3:
         st.subheader("✨ GPT-4 Vision")
         if 'openai_key' in st.secrets:
@@ -153,11 +145,10 @@ if image:
         else:
             st.warning("Add OpenAI key to enable")
 
-# Footer
 st.divider()
 st.caption("""
-⚡ **Tip**: Baseline CNN+RNN uses the trained CNN-RNN, GPT-3.5 refines that output, 
-while GPT-4 Vision generates captions directly from pixels
+⚡ **Tip**: Baseline CNN+RNN uses a trained CNN-LSTM model. GPT-3.5 refines that output.  
+GPT-4 Vision generates captions directly from pixels.
 """)
 st.markdown("""
 [GitHub Repo](https://github.com/your-repo) | 
