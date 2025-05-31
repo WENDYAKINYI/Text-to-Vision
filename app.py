@@ -84,7 +84,27 @@ with st.sidebar:
     )
 
 # Image Upload or Example
-uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
+# Main Content
+st.subheader("Upload an image or provide a URL")
+
+col_upload, col_url = st.columns([1, 1])
+
+with col_upload:
+    uploaded_file = st.file_uploader("Upload", type=["jpg", "png", "jpeg"])
+
+with col_url:
+    url_input = st.text_input("Or enter image URL")
+
+# Image loading logic
+image = None
+if uploaded_file:
+    image = load_image(uploaded_file)
+elif url_input:
+    image = load_image(url_input)
+else:
+    selected = st.selectbox("Or try an example:", list(example_images.keys()))
+    image = load_image(example_images[selected])
+
 example_images = {
     "Beach": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600",
     "Dog": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600",
