@@ -21,8 +21,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # --- Model Loading ---
 @st.cache_resource
+@st.cache_resource
 def get_models():
-    return load_baseline_model()
+    with st.spinner("🔄 Loading models... hang tight!"):
+        return load_baseline_model()
+
 
 encoder, decoder, vocab = get_models()
 
