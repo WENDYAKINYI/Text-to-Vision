@@ -83,13 +83,14 @@ with st.sidebar:
         f"Vocab Size: {len(vocab['word2idx']) if vocab else 0}"
     )
 
-# Image Upload or Example
+# Example Images
 example_images = {
     "Beach": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600",
     "Dog": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=600",
     "Food": "https://images.unsplash.com/photo-1565958011703-72f8583c2708?w=600"
 }
-# Main Content
+
+# --- Image Input ---
 st.subheader("Upload an image or provide a URL")
 
 col_upload, col_url = st.columns([1, 1])
@@ -100,16 +101,17 @@ with col_upload:
 with col_url:
     url_input = st.text_input("Or enter image URL")
 
-# Image loading logic
+# --- Load the image ---
 image = None
-if uploaded_file:
+if uploaded_file is not None:
     image = load_image(uploaded_file)
-elif url_input:
+elif url_input.strip() != "":
     image = load_image(url_input)
 else:
     selected = st.selectbox("Or try an example:", list(example_images.keys()))
     image = load_image(example_images[selected])
 
+# --- Proceed if an image is loaded ---
 baseline_result = None
 if image:
     st.image(image, caption="Input Image", use_container_width=True)
@@ -117,6 +119,8 @@ if image:
     base64_image = encode_image_to_base64(image)
 
     col1, col2, col3 = st.columns(3)
+
+    # continue with your caption generation blocks here...
 
     # 1. Baseline Model
     with col1:
