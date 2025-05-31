@@ -38,7 +38,7 @@ def get_gpt4_vision_caption(base64_image):
     try:
         client = openai.OpenAI(api_key=st.secrets["openai_key"])
         response = client.chat.completions.create(
-            model="gpt-4-vision",
+            model="gpt-4o",
             messages=[
                 {
                     "role": "user",
