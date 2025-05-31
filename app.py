@@ -99,7 +99,7 @@ else:
 baseline_result = None
 if image:
     st.image(image, caption="Input Image", use_container_width=True)
-    image_tensor = preprocess_image(image, device)
+    image_tensor = preprocess_image(image, device=device)
     base64_image = encode_image_to_base64(image)
 
     col1, col2, col3 = st.columns(3)
